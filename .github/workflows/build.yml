@@ -1,0 +1,52 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - '*'
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'adopt'
+          cache: 'gradle'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Build with Gradle
+        run: ./gradlew packageDistributionForCurrentOS
+
+      - name: Prepare release files
+        if: github.ref_type == 'tag'
+        run: |
+          mv build/compose/binaries/main/deb/*.deb build/compose/binaries/main/deb/pfce-${{ github.ref_name }}.deb
+          cd "build/compose/binaries/main/app/Pipewire Filter Chain Editor"
+          tar czf ../pfce-${{ github.ref_name }}.tar.gz .
+          zip -r ../pfce-${{ github.ref_name }}.zip .
+          
+
+      - name: Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            build/compose/binaries/main/deb/pfce-${{ github.ref_name }}.deb
+            build/compose/binaries/main/app/pfce-${{ github.ref_name }}.tar.gz
+            build/compose/binaries/main/app/pfce-${{ github.ref_name }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
