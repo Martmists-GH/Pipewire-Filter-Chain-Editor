@@ -22,16 +22,9 @@ package() {
     install -d "${pkgdir}/opt/pfce"
     cp -a "${srcdir}/bin" "${srcdir}/lib" "${pkgdir}/opt/pfce"
 
-    # Create wrapper script
+    # Add symlink to /usr/bin
     install -d "${pkgdir}/usr/bin"
-    cat <<EOF > "${srcdir}/pfce-wrapper"
-#!/bin/bash
-export LD_PRELOAD=/usr/lib/libfreetype.so
-exec "/opt/pfce/bin/Pipewire Filter Chain Editor" "\$@"
-EOF
-
-    # Install wrapper as main binary
-    install -Dm755 "${srcdir}/pfce-wrapper" "${pkgdir}/usr/bin/pfce"
+    ln -s "/opt/pfce/bin/Pipewire Filter Chain Editor" "${pkgdir}/usr/bin/pfce"
 
     # Add desktop file to applications
     install -Dm644 "${srcdir}/pfce.desktop" "${pkgdir}/usr/share/applications/pfce.desktop"
