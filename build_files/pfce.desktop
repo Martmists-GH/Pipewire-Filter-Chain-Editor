@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Version=1.0.1
+Name=Pipewire Filter Chain Editor
+Comment=A graphical node editor for PipeWire filter chains
+Exec=pfce
+Terminal=false
+Categories=AudioVideo;Audio;Settings;

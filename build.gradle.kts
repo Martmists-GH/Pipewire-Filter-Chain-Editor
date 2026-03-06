@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.martmists"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
@@ -57,9 +57,11 @@ compose {
 
                 packageName = "Pipewire Filter Chain Editor"
                 packageVersion = version.toString()
+                licenseFile = file("LICENSE")
 
                 linux {
-                    modules("jdk.security.auth")
+                    modules("java.desktop", "jdk.unsupported", "jdk.security.auth")
+                    shortcut = true
                 }
             }
         }

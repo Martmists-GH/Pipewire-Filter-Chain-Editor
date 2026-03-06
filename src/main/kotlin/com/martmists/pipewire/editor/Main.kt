@@ -1,6 +1,8 @@
 package com.martmists.pipewire.editor
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
@@ -8,9 +10,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ClipEntry
@@ -21,16 +26,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.input.key.*
-import androidx.compose.ui.window.*
-import com.martmists.pipewire.editor.compose.AppColors
-import com.martmists.pipewire.editor.compose.GraphCanvas
-import com.martmists.pipewire.editor.compose.NodePalette
-import com.martmists.pipewire.editor.compose.PropertiesPanel
-import com.martmists.pipewire.editor.compose.ResizableSplitter
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
+import com.martmists.pipewire.editor.compose.*
 import com.martmists.pipewire.editor.conf.PipeWireExporter
 import com.martmists.pipewire.editor.conf.PipeWireImporter
 import com.martmists.pipewire.editor.graph.GraphState
@@ -45,7 +44,7 @@ import io.github.vinceglb.filekit.dialogs.compose.rememberFileSaverLauncher
 import kotlinx.coroutines.launch
 import java.awt.datatransfer.StringSelection
 import java.io.File
-import java.util.Properties
+import java.util.*
 
 fun main() {
     val prefsFile = File("${System.getProperty("user.home")}/.config/pipewire-filter-editor.properties")

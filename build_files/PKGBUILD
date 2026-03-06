@@ -1,0 +1,29 @@
+pkgname=pfce-bin
+pkgver=1.0.1
+pkgrel=1
+pkgdesc="A graphical node editor for PipeWire filter chains"
+arch=('x86_64')
+
+provides=('pfce')
+
+source=(
+    "https://github.com/Martmists-GH/Pipewire-Filter-Chain-Editor/releases/download/${pkgver}/pfce-${pkgver}.tar.gz"
+    "pfce.desktop"
+)
+sha256sums=(
+    'SKIP'
+    '1727bfbe50633b452e2212d5aefe37301afc24125903e4e67c7bc25addd35132'
+)
+
+package() {
+    # Install to /opt/pfce
+    install -d "${pkgdir}/opt/pfce"
+    cp -a "${srcdir}/bin" "${srcdir}/lib" "${pkgdir}/opt/pfce"
+
+    # Add symlink to /usr/bin
+    install -d "${pkgdir}/usr/bin"
+    ln -s "/opt/pfce/bin/Pipewire Filter Chain Editor" "${pkgdir}/usr/bin/pfce"
+
+    # Add desktop file to applications
+    install -Dm644 "${srcdir}/pfce.desktop" "${pkgdir}/usr/share/applications/pfce.desktop"
+}
