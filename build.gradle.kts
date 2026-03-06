@@ -61,7 +61,6 @@ compose {
 
                 linux {
                     modules("java.desktop", "jdk.unsupported", "jdk.security.auth")
-                    shortcut = true
                 }
             }
         }
