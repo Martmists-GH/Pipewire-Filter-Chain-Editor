@@ -15,14 +15,18 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -174,7 +178,17 @@ fun AppContent(
         AlertDialog(
             onDismissRequest = { showAbout = false },
             title = { Text("About") },
-            text = { Text("PipeWire Filter Chain Editor\nBuilt with Compose for Desktop\n\n$numPluginString.") },
+            text = {
+                Text(buildAnnotatedString {
+                    appendLine("PipeWire Filter Chain Editor")
+                    appendLine("Built with Compose for Desktop")
+                    withLink(LinkAnnotation.Url("https://github.com/Martmists-GH/Pipewire-Filter-Chain-Editor")) {
+                        appendLine("Source Code")
+                    }
+                    appendLine()
+                    append(numPluginString)
+                })
+            },
             confirmButton = {
                 TextButton(onClick = { showAbout = false }) {
                     Text("OK")
@@ -350,6 +364,7 @@ fun AppContent(
                     fontSize = 10.sp,
                     fontFamily = FontFamily.Monospace
                 ),
+                cursorBrush = SolidColor(AppColors.accent),
                 modifier = Modifier
                     .width(180.dp)
                     .background(AppColors.panel2)

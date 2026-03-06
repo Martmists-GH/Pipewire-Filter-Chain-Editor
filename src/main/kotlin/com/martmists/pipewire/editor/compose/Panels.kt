@@ -13,6 +13,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
@@ -25,6 +26,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import com.martmists.pipewire.editor.graph.GraphState
 import com.martmists.pipewire.editor.graph.NodeDefinition
+import java.awt.Cursor
 import kotlin.collections.iterator
 
 
@@ -36,6 +38,7 @@ fun ResizableSplitter(onDelta: (Float) -> Unit) {
             .width(5.dp)
             .fillMaxHeight()
             .background(AppColors.border)
+            .pointerHoverIcon(PointerIcon(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)))
             .pointerInput(Unit) {
                 detectDragGestures { change, drag ->
                     change.consume()
@@ -335,6 +338,7 @@ private fun PropertyField(label: String, value: String, frozen: Boolean, onValue
                 fontSize = 10.sp,
                 fontFamily = FontFamily.Monospace
             ),
+            cursorBrush = SolidColor(AppColors.accent),
             readOnly = frozen,
             modifier = Modifier
                 .fillMaxWidth()
