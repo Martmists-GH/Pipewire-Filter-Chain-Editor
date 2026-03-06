@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Version=1.0.1
+Version=1.0.2
 Name=Pipewire Filter Chain Editor
 Comment=A graphical node editor for PipeWire filter chains
 Exec=pfce

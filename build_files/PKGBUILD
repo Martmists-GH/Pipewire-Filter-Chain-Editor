@@ -1,5 +1,5 @@
 pkgname=pfce-bin
-pkgver=1.0.1
+pkgver=1.0.2
 pkgrel=1
 pkgdesc="A graphical node editor for PipeWire filter chains"
 arch=('x86_64')
@@ -14,7 +14,7 @@ source=(
 )
 sha256sums=(
     'SKIP'
-    '1727bfbe50633b452e2212d5aefe37301afc24125903e4e67c7bc25addd35132'
+    'c128c8bc8b219f737299fee132e8c22eb34c1284b1ec23da020c334f2c160763'
 )
 
 package() {
