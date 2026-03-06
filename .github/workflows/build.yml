@@ -31,6 +31,24 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew packageReleaseDistributionForCurrentOS
 
+      - name: Prepare artifact files
+        if: github.ref_type != 'tag'
+        run: |
+          mv build/compose/binaries/main-release/deb/*.deb build/compose/binaries/main-release/deb/pfce-dev.deb
+          cd "build/compose/binaries/main-release/app/Pipewire Filter Chain Editor"
+          tar czf ../pfce-dev.tar.gz .
+          zip -r ../pfce-dev.zip .
+
+      - name: Upload artifacts
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Development Build
+          path: |
+            build/compose/binaries/main-release/deb/pfce-dev.deb
+            build/compose/binaries/main-release/app/pfce-dev.tar.gz
+            build/compose/binaries/main-release/app/pfce-dev.zip
+
       - name: Prepare release files
         if: github.ref_type == 'tag'
         run: |
@@ -38,7 +56,6 @@ jobs:
           cd "build/compose/binaries/main-release/app/Pipewire Filter Chain Editor"
           tar czf ../pfce-${{ github.ref_name }}.tar.gz .
           zip -r ../pfce-${{ github.ref_name }}.zip .
-          
 
       - name: Release
         if: github.ref_type == 'tag'
