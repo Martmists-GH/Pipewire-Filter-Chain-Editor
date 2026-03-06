@@ -5,6 +5,7 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -13,6 +14,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -67,6 +70,8 @@ fun NodePalette(
             .groupBy { it.value.category }
     }
 
+    val listState = rememberLazyListState()
+
     Box(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize().background(AppColors.panel)) {
             Box(
@@ -85,57 +90,69 @@ fun NodePalette(
             }
             HorizontalDivider(color = AppColors.border, thickness = 1.dp)
 
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                for ((category, entries) in grouped) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(AppColors.border)
-                                .padding(horizontal = 10.dp, vertical = 4.dp)
-                        ) {
-                            Text(
-                                category.uppercase(),
-                                color = AppColors.textDim,
-                                fontSize = 8.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = FontFamily.Monospace
+            Box {
+                LazyColumn(modifier = Modifier.fillMaxSize(), state = listState) {
+                    for ((category, entries) in grouped) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(AppColors.border)
+                                    .padding(horizontal = 10.dp, vertical = 4.dp)
+                            ) {
+                                Text(
+                                    category.uppercase(),
+                                    color = AppColors.textDim,
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = FontFamily.Monospace
+                                )
+                            }
+                        }
+                        items(entries.sortedBy { it.key }) { (name, def) ->
+                            PaletteItem(
+                                name = name,
+                                def = def,
+                                onAddAtCenter = {
+                                    val node = state.addNode(
+                                        name,
+                                        200f + (state.nodes.size * 20f) % 200f,
+                                        150f + (state.nodes.size * 15f) % 200f
+                                    )
+                                    state.selectOnly(node.id)
+                                },
+                                onDragStart = { sp ->
+                                    dragType = name
+                                    dragScreenPos = sp
+                                    dragging = true
+                                },
+                                onDragUpdate = { sp -> dragScreenPos = sp },
+                                onDragEnd = { sp ->
+                                    val bounds = canvasBoundsInWindow()
+                                    if (bounds.contains(sp)) {
+                                        val wx = (sp.x - bounds.left - state.offsetX) / (state.scale * density)
+                                        val wy = (sp.y - bounds.top - state.offsetY) / (state.scale * density)
+                                        state.addNode(name, wx, wy).id.also { state.selectOnly(it) }
+                                    } else {
+                                        state.addNode(name, 200f, 200f).id.also { state.selectOnly(it) }
+                                    }
+                                    dragging = false
+                                    dragType = null
+                                }
                             )
                         }
                     }
-                    items(entries.sortedBy { it.key }) { (name, def) ->
-                        PaletteItem(
-                            name = name,
-                            def = def,
-                            onAddAtCenter = {
-                                val node = state.addNode(
-                                    name,
-                                    200f + (state.nodes.size * 20f) % 200f,
-                                    150f + (state.nodes.size * 15f) % 200f
-                                )
-                                state.selectOnly(node.id)
-                            },
-                            onDragStart = { sp ->
-                                dragType = name
-                                dragScreenPos = sp
-                                dragging = true
-                            },
-                            onDragUpdate = { sp -> dragScreenPos = sp },
-                            onDragEnd = { sp ->
-                                val bounds = canvasBoundsInWindow()
-                                if (bounds.contains(sp)) {
-                                    val wx = (sp.x - bounds.left - state.offsetX) / (state.scale * density)
-                                    val wy = (sp.y - bounds.top - state.offsetY) / (state.scale * density)
-                                    state.addNode(name, wx, wy).id.also { state.selectOnly(it) }
-                                } else {
-                                    state.addNode(name, 200f, 200f).id.also { state.selectOnly(it) }
-                                }
-                                dragging = false
-                                dragType = null
-                            }
-                        )
-                    }
                 }
+
+                VerticalScrollbar(
+                    adapter = rememberScrollbarAdapter(listState),
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    style = LocalScrollbarStyle.current.copy(
+                        shape = RectangleShape,
+                        unhoverColor = Color.Transparent,
+                        hoverColor = AppColors.textDim,
+                    )
+                )
             }
         }
 
