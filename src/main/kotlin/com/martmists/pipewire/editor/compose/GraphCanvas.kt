@@ -29,6 +29,7 @@ import com.martmists.pipewire.editor.graph.NODE_WIDTH
 import com.martmists.pipewire.editor.graph.Node
 import com.martmists.pipewire.editor.graph.NodeDefinition
 import com.martmists.pipewire.editor.graph.PORT_RADIUS
+import java.awt.Cursor
 import kotlin.math.*
 
 
@@ -285,7 +286,6 @@ fun GraphCanvas(
                                     val delta = change.scrollDelta.y
                                     val factor = if (delta < 0) 1.12f else 1f / 1.12f
                                     val ns = (state.scale * factor).coerceIn(0.15f, 3f)
-                                    val d = density.density
                                     state.offsetX = pos.x - (pos.x - state.offsetX) * (ns / state.scale)
                                     state.offsetY = pos.y - (pos.y - state.offsetY) * (ns / state.scale)
                                     state.scale = ns
@@ -330,12 +330,6 @@ fun GraphCanvas(
                                             }
                                         }
                                     }
-                                    event.buttons.isTertiaryPressed -> {
-                                        panStart = pos
-                                        panOxStart = state.offsetX
-                                        panOyStart = state.offsetY
-                                        mode = Mode.PANNING
-                                    }
                                     else -> {
                                         val shift = event.keyboardModifiers.isShiftPressed || event.keyboardModifiers.isCtrlPressed
                                         val portHit = findPortHit(pos)
@@ -364,8 +358,10 @@ fun GraphCanvas(
                                                 mode = Mode.DRAGGING_NODE
                                             } else {
                                                 if (!shift) state.clearSelection()
-                                                rbStart = pos; rbEnd = pos
-                                                mode = Mode.RUBBER_BAND
+                                                panStart = pos
+                                                panOxStart = state.offsetX
+                                                panOyStart = state.offsetY
+                                                mode = Mode.PANNING
                                             }
                                         }
                                     }
@@ -400,7 +396,6 @@ fun GraphCanvas(
                                             else -> mode = Mode.IDLE
                                         }
                                     }
-                                    if (!event.buttons.isTertiaryPressed && mode == Mode.PANNING) mode = Mode.IDLE
                                 }
                                 else -> {}
                             }

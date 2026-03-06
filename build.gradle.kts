@@ -29,6 +29,7 @@ dependencies {
     implementation("org.jetbrains.compose.material3:material3:${ComposeBuildConfig.composeMaterial3Version}")
     implementation(compose.desktop.currentOs)
     implementation("io.github.vinceglb:filekit-dialogs-compose:0.13.0")
+    implementation("ch.qos.logback:logback-classic:1.5.32")
 }
 
 kotlin {
@@ -51,6 +52,16 @@ compose {
     desktop {
         application {
             mainClass = "com.martmists.pipewire.editor.MainKt"
+
+            buildTypes {
+                release {
+                    proguard {
+                        configurationFiles.from(file("proguard/release.pro"))
+                        optimize = true
+                        obfuscate = true
+                    }
+                }
+            }
 
             nativeDistributions {
                 targetFormats(TargetFormat.AppImage, TargetFormat.Deb)
